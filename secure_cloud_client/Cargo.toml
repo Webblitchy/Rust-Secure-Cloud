@@ -1,0 +1,17 @@
+[package]
+name = "secure_cloud_client"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+dryoc = {version = "0.4.2", features = ["serde"]}
+shamirsecretsharing = "0.1.5"
+read_input = "0.8.6"
+rand = "0.8.5"
+p256 = "0.12.0"
+serde = "1.0.150"
+bincode = "1.3.3"
+zxcvbn = "2.2.1"
+rpassword = "7.2.0"
