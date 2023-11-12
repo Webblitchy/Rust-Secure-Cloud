@@ -7,7 +7,7 @@ pub fn get_filename(filepath: &String) -> &str {
     Path::new(filepath).file_name().unwrap().to_str().unwrap()
 }
 
-pub fn save_file(name: &String, data: Vec<u8>) -> io::Result<()> {
+pub fn save_file(name: String, data: Vec<u8>) -> io::Result<()> {
     create_dir_all("downloads")?;
     OpenOptions::new()
         .create(true)
@@ -17,3 +17,4 @@ pub fn save_file(name: &String, data: Vec<u8>) -> io::Result<()> {
 
     Ok(())
 }
+

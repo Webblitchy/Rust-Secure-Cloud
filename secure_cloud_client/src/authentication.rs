@@ -1,7 +1,6 @@
-use crate::crypto::{generate_group_key};
+use crate::crypto::generate_group_key;
 use crate::shamir::{decrypt_shard, rebuild_grouped_shards};
 use crate::structs::*;
-
 
 pub fn build_groupkey(creds: Vec<(&User, &str)>) -> Option<Key> {
     let mut shards = Vec::new();
@@ -11,9 +10,9 @@ pub fn build_groupkey(creds: Vec<(&User, &str)>) -> Option<Key> {
                 Ok(shard) => shard,
                 Err(_) => {
                     eprintln!("Bad company / usernames / passwords");
-                    return None
+                    return None;
                 }
-            }
+            },
         );
     }
     let grouped_shards = rebuild_grouped_shards(shards);
@@ -25,3 +24,4 @@ pub fn build_groupkey(creds: Vec<(&User, &str)>) -> Option<Key> {
         None
     }
 }
+

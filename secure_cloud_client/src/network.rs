@@ -1,6 +1,6 @@
+use crate::structs::RequestType;
 use std::io::{Read, Write};
 use std::net::TcpStream;
-use crate::structs::RequestType;
 
 const SERVER_ADDR: &str = "127.0.0.1:1234";
 
@@ -29,12 +29,9 @@ pub fn write_stream(stream: &mut TcpStream, data: Vec<u8>) -> usize {
     written
 }
 
-
 fn connect() -> Option<TcpStream> {
     match TcpStream::connect(SERVER_ADDR) {
-        Ok(stream) => {
-            Some(stream)
-        },
+        Ok(stream) => Some(stream),
         Err(e) => {
             eprintln!("=> Failed to connect to server: {}", e);
             None
@@ -42,15 +39,19 @@ fn connect() -> Option<TcpStream> {
     }
 }
 
-
-pub fn send_to_server(data: &mut Vec<u8>, request_type: RequestType, stream: Option<TcpStream>) -> Option<TcpStream> {
+pub fn send_to_server(
+    data: &mut Vec<u8>,
+    request_type: RequestType,
+    stream: Option<TcpStream>,
+) -> Option<TcpStream> {
     data.push(request_type.clone() as u8); // dernier byte indique le type de requete
 
     let mut stream = match stream {
         None => connect()?,
-        Some(stream) => stream.try_clone().unwrap()
+        Some(stream) => stream.try_clone().unwrap(),
     };
 
     stream.write(data.as_slice()).unwrap(); // envoi des données
     Some(stream)
 }
+

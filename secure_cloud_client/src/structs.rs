@@ -1,27 +1,23 @@
+use dryoc::classic::crypto_secretbox::Key as CryptoKey;
+use dryoc::constants::CRYPTO_PWHASH_SALTBYTES;
 use dryoc::dryocsecretbox::{DryocSecretBox, Mac, Nonce};
-use dryoc::constants::{CRYPTO_PWHASH_SALTBYTES};
-use dryoc::classic::crypto_secretbox::{Key as CryptoKey};
 use serde::{Deserialize, Serialize};
-
 
 pub type Key = CryptoKey;
 pub type Salt = [u8; CRYPTO_PWHASH_SALTBYTES]; // [u8; 16]
 
-
 #[derive(Debug, Deserialize, Serialize)]
 pub struct EncryptedBox(
     pub DryocSecretBox<Mac, Vec<u8>>,
-    pub Nonce // StackByteArray<24: usize>
+    pub Nonce, // StackByteArray<24: usize>
 );
-
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct User {
     pub username: String,
     pub encrypted_shard: EncryptedBox,
-    pub salt: Salt // [u8; 16]
+    pub salt: Salt, // [u8; 16]
 }
-
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Company {
@@ -34,8 +30,8 @@ pub struct Company {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct FileNameBox(
-    pub String, // UUID
-    pub EncryptedBox // encrypted name
+    pub String,       // UUID
+    pub EncryptedBox, // encrypted name
 );
 
 #[derive(Clone)]
@@ -46,5 +42,12 @@ pub enum RequestType {
     UploadFile,
     GetFilenames,
     DownloadFile,
-    RegenerateKey
+    RegenerateKey,
+}
+
+pub enum ValidationType {
+    NotEmpty,
+    Password,
+    NbMinUser,
+    ExistingFile,
 }

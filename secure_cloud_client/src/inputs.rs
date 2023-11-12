@@ -1,8 +1,12 @@
-use std::env;
-use std::path::Path;
+use ratatui::style::{Color, Style};
 use read_input::{prelude::input, InputBuild, InputConstraints};
 use rpassword::prompt_password;
+use std::env;
+use std::path::Path;
+use tui_textarea::TextArea;
 use zxcvbn::zxcvbn;
+
+use crate::structs::ValidationType;
 
 fn check_password_strength(password: &String) -> bool {
     if password.len() < 12 || password.len() > 64 {
@@ -16,6 +20,23 @@ fn check_password_strength(password: &String) -> bool {
     true
 }
 
+pub fn validate_input(textarea: &mut TextArea, validation_type: &ValidationType) -> bool {
+    let input = &textarea.lines()[0];
+    let is_valid = match validation_type {
+        ValidationType::NotEmpty => !input.is_empty(),
+        ValidationType::Password => check_password_strength(input),
+        ValidationType::NbMinUser => input.parse::<u8>().is_ok_and(|nb| nb > 1),
+        ValidationType::ExistingFile => Path::new(input).is_file(),
+    };
+    let font_color;
+    if is_valid {
+        font_color = Color::LightGreen;
+    } else {
+        font_color = Color::LightRed;
+    }
+    textarea.set_style(Style::default().fg(font_color));
+    is_valid
+}
 
 pub fn input_nb_users() -> u8 {
     input::<u8>()
@@ -26,9 +47,7 @@ pub fn input_nb_users() -> u8 {
 }
 
 pub fn input_username() -> String {
-    input::<String>()
-        .msg("Enter username : ")
-        .get()
+    input::<String>().msg("Enter username : ").get()
 }
 
 pub fn input_password(password_check_needed: bool) -> String {
@@ -88,16 +107,12 @@ pub fn input_option() -> u8 {
 pub fn input_file() -> String {
     input::<String>()
         .msg("Enter the path of the file you want to upload (cancel with ENTER) : ")
-        .add_test(|s | {
-            Path::new(s).is_file()
-        })
+        .add_test(|s| Path::new(s).is_file())
         .default("".to_string()) // if no file entered, it will return an empty string
-        .err(
-            format!(
-                "This file doesn't exist\nEnter a path relative from {}/ or absolute",
-                env::current_dir().unwrap().display()
-            )
-        )
+        .err(format!(
+            "This file doesn't exist\nEnter a path relative from {}/ or absolute",
+            env::current_dir().unwrap().display()
+        ))
         .get()
 }
 
